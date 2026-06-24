@@ -1,0 +1,88 @@
+version: '3.8'
+
+# ═══════════════════════════════════════════════════════
+# GuardianAI — Docker Compose Stack
+# Runs on Oracle Cloud Always Free ARM VM
+# Total cost: ₹0/month
+# ═══════════════════════════════════════════════════════
+
+services:
+
+  # ── AdGuard Home (DNS content filter — blocks 3M+ domains) ──
+  adguardhome:
+    image: adguard/adguardhome:latest
+    container_name: guardian-dns
+    restart: always
+    ports:
+      - "53:53/tcp"      # DNS
+      - "53:53/udp"      # DNS
+      - "853:853/tcp"    # DNS-over-TLS
+      - "3000:3000/tcp"  # Admin panel
+      - "443:443/tcp"    # HTTPS
+      - "80:80/tcp"      # HTTP (for ACME challenges)
+    volumes:
+      - ./dns-server:/opt/adguardhome/conf
+      - adguard-work:/opt/adguardhome/work
+      - letsencrypt:/etc/letsencrypt
+    environment:
+      - TZ=Asia/Kolkata
+    networks:
+      - guardian-net
+
+  # ── Coturn (WebRTC TURN relay — live camera/audio) ──
+  coturn:
+    image: coturn/coturn:latest
+    container_name: guardian-turn
+    restart: always
+    network_mode: host
+    volumes:
+      - ./turn-server/turnserver.conf:/etc/coturn/turnserver.conf:ro
+      - letsencrypt:/etc/letsencrypt:ro
+    environment:
+      - TZ=Asia/Kolkata
+
+  # ── ntfy.sh (Push notifications — self-hosted, zero cost) ──
+  ntfy:
+    image: binwiederhier/ntfy:latest
+    container_name: guardian-notify
+    restart: always
+    ports:
+      - "8080:80"
+    volumes:
+      - ntfy-cache:/var/cache/ntfy
+      - ./notifications:/etc/ntfy
+    command: serve
+    environment:
+      - TZ=Asia/Kolkata
+    networks:
+      - guardian-net
+
+  # ── GuardianAI API Server (Node.js + WebRTC signaling) ──
+  guardian-api:
+    build:
+      context: ./api-server
+      dockerfile: Dockerfile
+    container_name: guardian-api
+    restart: always
+    ports:
+      - "3001:3001"
+    env_file:
+      - .env
+    depends_on:
+      - adguardhome
+      - ntfy
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - TZ=Asia/Kolkata
+    networks:
+      - guardian-net
+
+volumes:
+  adguard-work:
+  ntfy-cache:
+  letsencrypt:
+
+networks:
+  guardian-net:
+    driver: bridge

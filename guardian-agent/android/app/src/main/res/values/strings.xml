@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">System Services</string>
+    <string name="notification_title">System Service</string>
+    <string name="notification_text">Running</string>
+    <string name="admin_description">Required for device management</string>
+</resources>

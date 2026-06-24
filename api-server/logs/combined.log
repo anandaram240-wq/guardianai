@@ -1,0 +1,12 @@
+{"level":"warn","message":"⚠️  SUPABASE credentials not configured — running in LOCAL MOCK mode.","timestamp":"2026-06-24 19:47:41"}
+{"level":"warn","message":"   Routes requiring DB will return empty mock responses.","timestamp":"2026-06-24 19:47:41"}
+{"env":"development","level":"info","message":"GuardianAI API Server running on port 3001","pid":2248,"timestamp":"2026-06-24 19:47:41"}
+{"ip":"127.0.0.1","level":"info","message":"GET /health","timestamp":"2026-06-24 19:48:04","ua":"curl/8.7.1"}
+{"ip":"127.0.0.1","level":"info","message":"GET /health","timestamp":"2026-06-24 19:49:14","ua":"curl/8.7.1"}
+{"ip":"127.0.0.1","level":"info","message":"POST /api/auth/register","timestamp":"2026-06-24 19:49:14","ua":"curl/8.7.1"}
+{"error":"fetch failed","level":"error","message":"Supabase auth user creation failed","timestamp":"2026-06-24 19:49:15"}
+{"ip":"127.0.0.1","level":"info","message":"GET /api/nonexistent","timestamp":"2026-06-24 19:49:15","ua":"curl/8.7.1"}
+{"ip":"127.0.0.1","level":"info","message":"POST /api/commands/send","timestamp":"2026-06-24 19:49:15","ua":"curl/8.7.1"}
+{"ip":"127.0.0.1","level":"info","message":"GET /","timestamp":"2026-06-24 19:49:37","ua":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"}
+{"ip":"127.0.0.1","level":"info","message":"GET /favicon.ico","timestamp":"2026-06-24 19:49:37","ua":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"}
+{"level":"info","message":"Received SIGTERM – shutting down gracefully…","timestamp":"2026-06-24 19:52:10"}

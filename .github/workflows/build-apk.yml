@@ -1,0 +1,56 @@
+name: Build GuardianAI APK
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Accept SDK licenses
+        run: yes | sdkmanager --licenses || true
+
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
+          restore-keys: ${{ runner.os }}-gradle-
+
+      - name: Make gradlew executable
+        working-directory: guardian-agent/android
+        run: chmod +x gradlew
+
+      - name: Build Debug APK
+        working-directory: guardian-agent/android
+        run: ./gradlew assembleDebug --no-daemon --stacktrace
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: GuardianAI-Agent-APK
+          path: guardian-agent/android/app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 30
+
+      - name: Get APK info
+        working-directory: guardian-agent/android
+        run: |
+          echo "✅ APK built successfully!"
+          ls -lh app/build/outputs/apk/debug/app-debug.apk

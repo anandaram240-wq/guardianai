@@ -1,0 +1,14 @@
+node_modules/
+*.log
+.env
+api-server/.env
+api-server/node_modules/
+api-server/logs/
+*.apk
+*.aab
+*.keystore
+build/
+.gradle/
+guardian-agent/android/.gradle/
+guardian-agent/android/app/build/
+guardian-agent/android/local.properties

@@ -1,0 +1,28 @@
+# ═══════════════════════════════════════════════
+# ntfy.sh server configuration
+# Self-hosted push notifications (free)
+# ═══════════════════════════════════════════════
+
+base-url: https://notify.guardianai.local
+listen-http: ":80"
+
+# Authentication
+auth-file: /var/cache/ntfy/user.db
+auth-default-access: deny-all
+
+# Proxy
+behind-proxy: true
+
+# Attachments (for screenshots, audio clips)
+attachment-cache-dir: /var/cache/ntfy/attachments
+attachment-total-size-limit: 5G
+attachment-file-size-limit: 15M
+attachment-expiry-duration: 3h
+
+# Rate limits
+visitor-attachment-total-size-limit: 100M
+visitor-request-limit-burst: 60
+visitor-request-limit-replenish: 10s
+
+# Logging
+log-level: info

