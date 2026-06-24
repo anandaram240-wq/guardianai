@@ -15,6 +15,11 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: '8.4'
+
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
@@ -26,17 +31,11 @@ jobs:
         run: |
           mkdir -p gradle/wrapper
           curl -fsSL -o gradle/wrapper/gradle-wrapper.jar \
-            https://github.com/gradle/gradle/raw/v8.4.0/gradle/wrapper/gradle-wrapper.jar
+            "https://github.com/gradle/gradle/raw/v8.4.0/gradle/wrapper/gradle-wrapper.jar"
 
-      - name: Make gradlew executable
+      - name: Build APK
         working-directory: guardian-agent/android
-        run: chmod +x gradlew
-
-      - name: Build Debug APK
-        working-directory: guardian-agent/android
-        run: ./gradlew assembleDebug --no-daemon --stacktrace
-        env:
-          GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx2048m"
+        run: gradle assembleDebug --no-daemon --stacktrace
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
