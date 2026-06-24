@@ -3,23 +3,41 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
-      - uses: android-actions/setup-android@v3
-      - run: yes | sdkmanager --licenses || true
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Accept licenses
+        run: yes | sdkmanager --licenses || true
+
+      - name: Download Gradle wrapper jar
+        working-directory: guardian-agent/android
+        run: |
+          mkdir -p gradle/wrapper
+          curl -fsSL -o gradle/wrapper/gradle-wrapper.jar \
+            https://github.com/gradle/gradle/raw/v8.4.0/gradle/wrapper/gradle-wrapper.jar
+
       - name: Make gradlew executable
         working-directory: guardian-agent/android
         run: chmod +x gradlew
-      - name: Build APK
+
+      - name: Build Debug APK
         working-directory: guardian-agent/android
-        run: ./gradlew assembleDebug --no-daemon
+        run: ./gradlew assembleDebug --no-daemon --stacktrace
+        env:
+          GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx2048m"
+
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
